@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Password Generator</title>
+    <link rel="stylesheet" href="style.css">
+    
+</head>
+
+<body>
+    <h1>Password Generator</h1>
+
+    <label for="PasswordLength">Password Length:</label>
+    <input type="number" id="PasswordLength" value="12" min="1">
+
+    <h3>Select What You Want In Your Password:</h3><br>
+
+    <input type="checkbox" id="IncludeLowerCase">
+    <label for="IncludeLowerCase">Lower Case Character</label> <br>
+
+    <input type="checkbox" id="IncludeUpperCase">
+    <label for="IncludeUpperCase">Upper Case Character</label> <br>
+
+    <input type="checkbox" id="IncludeNumber">
+    <label for="IncludeNumber">Numbers</label> <br>
+
+    <input type="checkbox" id="IncludeSymbols">
+    <label for="IncludeSymbols">Symbols(@$!*()&)</label>
+
+    <p id="DisplayPassword">Generated Password:</p>
+
+    <button id="GeneratePassword" onclick="GeneratePassword()">Generate Password</button>
+    
+
+
+    <!-- Password Strength Check -->
+    <p id="PasswordStrengthText">Strength: -</p>
+    <div id="StrengthBarContainer">
+        <div id="StrengthBar"></div>
+    </div>
+
+
+    <script>
+        // grabbing all the ids to work with 
+        const PasswordLength = document.getElementById("PasswordLength");
+        const IncludeLowerCase = document.getElementById("IncludeLowerCase");
+        const IncludeUpperCase = document.getElementById("IncludeUpperCase");
+        const IncludeNumber = document.getElementById("IncludeNumber");
+        const IncludeSymbols = document.getElementById("IncludeSymbols");
+        const GeneratePasswordBtn = document.getElementById("GeneratePassword");
+        const DisplayPassword = document.getElementById("DisplayPassword");
+        // elements to check the strength of password
+        const StrengthText = document.getElementById("PasswordStrengthText");
+        const StrengthBar = document.getElementById("StrengthBar");
+
+        // all the chars that we use to make random password 
+        const lowercaseCharacters = "abcdefghijklmnopqrstuvwxyz";
+        const uppercaseCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        const numberCharacters = "0123456789";
+        const symbolCharacters = "@$!*()&";
+
+        // Defining the main function 
+        function GeneratePassword() {
+            let pool = "";
+
+            if (IncludeLowerCase.checked) {
+                pool += lowercaseCharacters;
+            }
+            if (IncludeUpperCase.checked) {
+                pool += uppercaseCharacters;
+            }
+            if (IncludeNumber.checked) {
+                pool += numberCharacters;
+            }
+            if (IncludeSymbols.checked) {
+                pool += symbolCharacters;
+            }
+
+            if (pool.length === 0) {
+                DisplayPassword.textContent = "Please select at least one option!";
+                StrengthText.textContent = "Strength: -";
+                StrengthBar.style.width = "0%";
+                StrengthBar.style.backgroundColor = "transparent";
+                return;
+            }
+
+            // final empty string to store the random password 
+            let Password = "";
+            // getting the length from the html by .value and converting it into number 
+            const length = Number(PasswordLength.value);
+
+            // running a for loop that loops through the length of password 
+            for (let i = 0; i < length; i++) {
+                const randomIndex = Math.floor(Math.random() * pool.length);
+                const randomCharacter = pool[randomIndex];
+                Password += randomCharacter;
+            }
+
+            // displaying the random generated password 
+            DisplayPassword.textContent = Password;
+
+            // update strength meter
+            updatePasswordStrength(Password);
+        }
+
+        // Function to check and display the password strength 
+        function updatePasswordStrength(password) {
+            let score = 0;
+
+            if (password.length >= 8) score++;
+            if (password.length >= 12) score++;
+
+            if (/[a-z]/.test(password)) score++;
+            if (/[A-Z]/.test(password)) score++;
+            if (/[0-9]/.test(password)) score++;
+            if (/[^a-zA-Z0-9]/.test(password)) score++;
+
+            // after getting score:
+            if (score <= 2) {
+                StrengthText.textContent = "Strength: Weak";
+                StrengthBar.style.width = "30%";
+                StrengthBar.style.backgroundColor = "red";
+            } else if (score <= 4) {
+                StrengthText.textContent = "Strength: Medium";
+                StrengthBar.style.width = "60%";
+                StrengthBar.style.backgroundColor = "orange";
+            } else {
+                StrengthText.textContent = "Strength: Strong";
+                StrengthBar.style.width = "100%";
+                StrengthBar.style.backgroundColor = "green";
+            }
+        }
+
+        
+    </script>
+</body>
+
+</html>
